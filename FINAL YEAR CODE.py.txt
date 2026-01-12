@@ -1,0 +1,462 @@
+import time                                #Import time library
+import RPi.GPIO as GPIO                    #Import GPIO library                            
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
+IN1=26
+IN2=19
+IN3=13
+IN4=6
+
+
+IN5=2
+IN6=3
+IN7=21
+IN8=20
+
+IN9=17
+IN10=27
+
+GPIO.setup(IN9, GPIO.OUT)
+GPIO.setup(IN10, GPIO.OUT)
+
+GPIO.output(IN9, False)
+GPIO.output(IN10, False)
+
+GPIO.setup(IN1, GPIO.OUT)
+GPIO.setup(IN2, GPIO.OUT)
+GPIO.setup(IN3, GPIO.OUT)
+GPIO.setup(IN4, GPIO.OUT)
+
+GPIO.output(IN1, False)
+GPIO.output(IN2, False)
+GPIO.output(IN3, False)
+GPIO.output(IN4, False)
+
+
+GPIO.setup(IN5, GPIO.OUT)
+GPIO.setup(IN6, GPIO.OUT)
+GPIO.setup(IN7, GPIO.OUT)
+GPIO.setup(IN8, GPIO.OUT)
+
+GPIO.output(IN5, False)
+GPIO.output(IN6, False)
+GPIO.output(IN7, False)
+GPIO.output(IN8, False)
+
+
+def FORWORD():
+    print('FORWORD')
+    GPIO.output(IN1,False)
+    GPIO.output(IN2, True)
+    GPIO.output(IN3,False)
+    GPIO.output(IN4,True)
+    
+    
+def BACKWORD():
+    print('BACKWORD')
+    GPIO.output(IN1,True)
+    GPIO.output(IN2, False)
+    GPIO.output(IN3,True)
+    GPIO.output(IN4,False)
+   
+    
+def STOP():
+    print('STOP')
+    GPIO.output(IN1, False)
+    GPIO.output(IN2, False)
+    GPIO.output(IN3, False)
+    GPIO.output(IN4, False)
+    
+    
+def LEFT():
+    print('LEFT')
+    GPIO.output(IN1,True)
+    GPIO.output(IN2, False)
+    GPIO.output(IN3,False)
+    GPIO.output(IN4,True)
+    
+    
+def RIGHT():
+    print('RIGHT')
+    GPIO.output(IN1,False)
+    GPIO.output(IN2, True)
+    GPIO.output(IN3,True)
+    GPIO.output(IN4,False)
+   
+
+def up():
+    print('up')
+    GPIO.output(IN7, True)
+    GPIO.output(IN8, False)
+    time.sleep(5)
+    GPIO.output(IN7, False)
+    GPIO.output(IN8, False)
+def down():
+    print('down')
+    GPIO.output(IN8, True)
+    GPIO.output(IN7, False)
+    time.sleep(5)
+    GPIO.output(IN7, False)
+    GPIO.output(IN8, False)
+
+def Open():
+    print('open')
+    GPIO.output(IN5, True)
+    GPIO.output(IN6, False)
+    time.sleep(5)
+    GPIO.output(IN5, False)
+    GPIO.output(IN6, False)
+def close():
+    print('close')
+    GPIO.output(IN6, True)
+    GPIO.output(IN5, False)
+    time.sleep(5)
+    GPIO.output(IN5, False)
+    GPIO.output(IN6, False)
+def move():
+    GPIO.output(IN9, True)
+    GPIO.output(IN10, False)
+    time.sleep(0.3)
+    GPIO.output(IN9, False)
+    GPIO.output(IN10, False)
+def drop():
+    GPIO.output(IN9, True)
+    GPIO.output(IN10, False)
+    time.sleep(0.5)
+    GPIO.output(IN9, False)
+    GPIO.output(IN10, False)
+def original():
+    GPIO.output(IN9, False)
+    GPIO.output(IN10, True)
+    time.sleep(0.3)
+    GPIO.output(IN9, False)
+    GPIO.output(IN10, False)
+def original2():
+    GPIO.output(IN9, False)
+    GPIO.output(IN10, True)
+    time.sleep(0.5)
+    GPIO.output(IN9, False)
+    GPIO.output(IN10, False)    
+def green_box():
+
+    down()
+    Open()
+    close()
+    up()
+    FORWORD()
+    time.sleep(5)
+    STOP()
+    time.sleep(1)
+    drop()
+    
+    Open()
+    
+    original2()
+    BACKWORD()
+    time.sleep(6)
+    STOP()
+def red_box():
+    
+    down()
+    Open()
+    close()
+    up()
+    original()
+    FORWORD()
+    time.sleep(10)
+    STOP()
+    time.sleep(1)
+    drop()
+    
+    Open()
+    
+    original2()
+    BACKWORD()
+    time.sleep(11)
+    STOP()
+                
+def blue_box():
+    
+    down()
+    Open()
+    close()
+    up()
+    move()
+    FORWORD()
+    time.sleep(15)
+    STOP()
+    time.sleep(1)
+    drop()
+    
+    Open()
+    
+    original2()
+    BACKWORD()
+    time.sleep(16)
+    STOP()
+
+
+
+
+
+
+bluetooth
+
+import serial
+import os
+import time                                #Import time library
+from robot import *
+ser = serial.Serial(
+  
+   port='/dev/ttyAMA0',  #ttyAMA0 ttyS0
+   baudrate = 9600,
+   parity=serial.PARITY_NONE,
+   stopbits=serial.STOPBITS_ONE,
+   bytesize=serial.EIGHTBITS,
+   timeout=1
+)
+
+while True:
+    data = ser.readline()
+    data=data.decode('UTF-8','ignore')
+
+    print ("received data:", str(data))
+    if str(data) == 'rr':
+        print('red color selected')
+        os.system("python3 red_detection.py")
+        red_box()
+        
+    if str(data) == 'rb':
+        print('red color selected')
+        os.system("python3 red_detection.py")
+        blue_box()
+    if str(data) == 'rg':
+        print('red color selected')
+        os.system("python3 red_detection.py")
+        green_box()
+        
+    if str(data) == 'gg':
+        print('green color selected')
+        os.system("python3 green_detection.py")
+        green_box()
+    if str(data) == 'gr':
+        print('green color selected')
+        os.system("python3 green_detection.py")
+        red_box()
+    if str(data) == 'gb':
+        print('green color selected')
+        os.system("python3 green_detection.py")
+        blue_box()
+    if str(data) == 'bb':
+        print('blue color selected')
+        os.system("python3 blue_detection.py")
+        blue_box()
+    if str(data) == 'bg':
+        print('blue color selected')
+        os.system("python3 blue_detection.py")
+        blue_box()
+    if str(data) == 'br':
+        print('blue color selected')
+        os.system("python3 blue_detection.py")
+        blue_box()
+        
+    if str(data) == 'f':
+        FORWORD()
+    if str(data) == 'b':
+        BACKWORD()
+    if str(data) == 's':
+        STOP()
+    if str(data) == 'l':
+        LEFT()
+    if str(data) == 'u':
+        up()
+    if str(data) == 'd':
+        down()
+    if str(data) == 'o':
+        Open()
+    if str(data) == 'c':
+        close()              
+    if str(data) == 'r':
+        RIGHT()       
+
+
+blue detection
+import numpy as np
+import cv2
+from robot import *
+# turn on cam
+webcam = cv2.VideoCapture(0)
+
+b=0
+
+while (1):
+    _, imageFrame = webcam.read()
+
+    # Convert BGR to HSV colorspace
+    hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
+    #blue color
+    blue_lower = np.array([94, 80, 2], np.uint8)
+    blue_upper = np.array([120, 255, 255], np.uint8)
+    blue_mask = cv2.inRange(hsvFrame, blue_lower, blue_upper)
+
+
+    # to detect only that particular color
+    kernal = np.ones((5, 5), "uint8")
+
+    # blue color
+    blue_mask = cv2.dilate(blue_mask, kernal)
+    res_blue = cv2.bitwise_and(imageFrame, imageFrame, mask=blue_mask)
+
+    # Creating contour to track blue color
+    contours, hierarchy = cv2.findContours(blue_mask,
+                                           cv2.RETR_TREE,
+                                           cv2.CHAIN_APPROX_SIMPLE)
+    for pic, contour in enumerate(contours):
+        area = cv2.contourArea(contour)
+        if (area > 300):
+            x, y, w, h = cv2.boundingRect(contour)
+            imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                       (x + w, y + h),
+                                       (255, 0, 0), 2)
+
+            cv2.putText(imageFrame, "Blue Colour", (x, y),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        1.0, (255, 0, 0))
+            b=b+1
+
+
+    # final run
+    cv2.imshow("Color Detection", imageFrame)
+    if cv2.waitKey(10) & 0xFF == ord('q'):
+
+        break
+
+    if b>50:
+        print('blue color detected')
+        b=0
+        
+        break
+original()
+webcam.release()
+cv2.destroyAllWindows()
+
+Red Detection
+import numpy as np
+import cv2
+from robot import *
+# turn on cam
+webcam = cv2.VideoCapture(0)
+r=0
+
+while (1):
+    _, imageFrame = webcam.read()
+
+    # Convert BGR to HSV colorspace
+    hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
+
+    # Very dark red HSV range
+    dark_red_lower1 = np.array([0, 100, 0], np.uint8)
+    dark_red_upper1 = np.array([10, 255, 60], np.uint8)
+
+    dark_red_lower2 = np.array([170, 100, 0], np.uint8)
+    dark_red_upper2 = np.array([180, 255, 60], np.uint8)
+
+    red_mask1 = cv2.inRange(hsvFrame, dark_red_lower1, dark_red_upper1)
+    red_mask2 = cv2.inRange(hsvFrame, dark_red_lower2, dark_red_upper2)
+
+    red_mask = cv2.bitwise_or(red_mask1, red_mask2)
+    kernal = np.ones((5, 5), "uint8")
+
+    # red color
+    red_mask = cv2.dilate(red_mask, kernal)
+    res_red = cv2.bitwise_and(imageFrame, imageFrame, mask=red_mask)
+
+
+    # Creating contour to track red color
+    contours, hierarchy = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    for pic, contour in enumerate(contours):
+        area = cv2.contourArea(contour)
+        if (area > 300):
+            x, y, w, h = cv2.boundingRect(contour)
+            imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                       (x + w, y + h),
+                                       (0, 0, 255), 2)
+
+            cv2.putText(imageFrame, "Red Colour", (x, y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                        (0, 0, 255))
+            r=r+1
+
+    # final run
+    cv2.imshow("Color Detection", imageFrame)
+    if cv2.waitKey(10) & 0xFF == ord('q'):
+
+        break
+    if r>50:
+        print('red color detected')
+        r=0
+        break
+move()
+webcam.release()
+cv2.destroyAllWindows()
+
+green detection
+import numpy as np
+import cv2
+from robot import *
+# turn on cam
+webcam = cv2.VideoCapture(0)
+g=0
+
+while (1):
+    _, imageFrame = webcam.read()
+
+    # Convert BGR to HSV colorspace
+    hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
+
+    #green color
+    green_lower = np.array([25, 52, 72], np.uint8)
+    green_upper = np.array([102, 255, 255], np.uint8)
+    green_mask = cv2.inRange(hsvFrame, green_lower, green_upper)
+
+    # to detect only that particular color
+    kernal = np.ones((5, 5), "uint8")
+
+    # green color
+    green_mask = cv2.dilate(green_mask, kernal)
+    res_green = cv2.bitwise_and(imageFrame, imageFrame, mask=green_mask)
+
+    # Creating contour to track green color
+    contours, hierarchy = cv2.findContours(green_mask,
+                                           cv2.RETR_TREE,
+                                           cv2.CHAIN_APPROX_SIMPLE)
+
+    for pic, contour in enumerate(contours):
+        area = cv2.contourArea(contour)
+        if (area > 300):
+            x, y, w, h = cv2.boundingRect(contour)
+            imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                       (x + w, y + h),
+                                       (0, 255, 0), 2)
+
+            cv2.putText(imageFrame, "Green Colour", (x, y),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        1.0, (0, 255, 0))
+            g=g+1
+
+
+    # final run
+    cv2.imshow("Color Detection", imageFrame)
+    if cv2.waitKey(10) & 0xFF == ord('q'):
+
+        break
+    if g>50:
+        print('green color detected')
+        g=0
+        break
+webcam.release()
+cv2.destroyAllWindows()
+
+ 
